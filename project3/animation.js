@@ -79,24 +79,48 @@ gl.enableVertexAttribArray(atr_coord);
 gl.vertexAttribPointer(atr_color, 4, gl.FLOAT, false, 7*4, 3*4);
 gl.enableVertexAttribArray(atr_color);
 
-const ROTATION_SPEED = 0.25;
+const ROTATION_SPEED = 0.5;
+const rotateXY = 0.25;
+const rotateXZ = 0.5;
+const rotateYZ = 0.05;
 
 let rotation_amnt = 0.0;
+
+let amntXY = 0.0;
+let amntXZ = 0.0;
+let amntYZ = 0.0;
+
+let last_update = performance.now();
 
 //All the triangle vertices and the color they will have
 
 function render(now){
 
-    let last_update =performance.now();
     let time_delta = ( now - last_update ) / 1000;
+    //rotation_amnt += ROTATION_SPEED * time_delta;
+    //rotation_amnt %= 1.0;
+    last_update = performance.now();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+    amntXY += rotateXY * time_delta;
+    amntXZ += rotateXZ * time_delta;
+    amntYZ += rotateYZ * time_delta;
+
+    amntXY %= 1.0;
+    amntXZ %= 1.0;
+    amntYZ %= 1.0;
+
+    let modelXY = Mat4.rotation_xy( amntXY );
+    let modelXZ = Mat4.rotation_xz( amntXZ );
+    let modelYZ = Mat4.rotation_yz( amntYZ );
     
-                
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    let model = Mat4.rotation_xz( 0.125 );
+    //let model = Mat4.rotation_xz( rotation_amnt );
+    let model = modelXY.mul(modelXZ.mul(modelYZ))
 
     set_uniform_matrix4( gl, shader_program, "modelview", model.data );
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+                
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
