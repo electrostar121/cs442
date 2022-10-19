@@ -2,12 +2,6 @@ let canvas = document.getElementById('the-canvas');
 let gl = canvas.getContext('webgl2');
 const VERTEX_STRIDE = 28;//We are setting the vertex stride here
 
-
-//Change what file to render here
-let meshFile = "teapot.obj"
-
-
-
 gl.clearColor(0.9, 0.9, 1.0, 1);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -59,7 +53,7 @@ gl.linkProgram(shader_program);
 
 function displayMesh(aMesh){//Calls this after loading the mesh into the mesh class
 
-    const rotateXZ = 0.25;//Set the rotation amount here
+    const rotateXZ = 0.125;//Set the rotation amount here
 
     let amntXZ = 0.0;
 
@@ -67,13 +61,13 @@ function displayMesh(aMesh){//Calls this after loading the mesh into the mesh cl
 
     function render(now){//render the mesh
 
-        gl.enable( gl.CULL_FACE );//Enable culling
-        gl.cullFace( gl.BACK );//Cull the back
+        gl.enable(gl.CULL_FACE);//Enable culling
+        gl.cullFace(gl.BACK);//Cull the back
         gl.frontFace(gl.CW);//Got to set the winding order, CW = clock wise, CCW = counter clock wise
 
         gl.enable(gl.DEPTH_TEST);//Enable the depth test
         
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );//Clear the color buffer and depth buffer
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);//Clear the color buffer and depth buffer
         gl.useProgram( aMesh.program );//use the shader
 
         let time_delta = (now - last_update) / 1000;
