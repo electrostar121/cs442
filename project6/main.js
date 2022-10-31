@@ -176,37 +176,37 @@ function displayMesh(aMesh){//Calls this after loading the mesh into the mesh cl
 
         if(controls.is_key_down('KeyQ')){
             
-            roll -= 0.01;
+            roll -= speed;
             
         }
 
         if(controls.is_key_down('KeyE')){
             
-            roll += 0.01;
+            roll += speed;
             
         }
 
         if(controls.is_key_down('ArrowLeft')){
             
-            yaw += 0.01;
+            yaw += speed;
             
         }
 
         if(controls.is_key_down('ArrowRight')){
             
-            yaw -= 0.01;
+            yaw -= speed;
             
         }
 
         if(controls.is_key_down('ArrowUp')){
             
-            pitch -= 0.01;
+            pitch -= speed;
             
         }
 
         if(controls.is_key_down('ArrowDown')){
             
-            pitch += 0.01;
+            pitch += speed;
             
         }
 
