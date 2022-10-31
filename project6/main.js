@@ -123,15 +123,30 @@ function displayMesh(aMesh){//Calls this after loading the mesh into the mesh cl
 
     function update(){
 
+        /*
+
+        if(controls.is_key_down('KeyW') && controls.is_key_down('KeyA') && controls.is_key_down('KeyS') && controls.is_key_down("KeyD")){
+
+            psoition = position;
+
+        }else if((controls.is_key_down('KeyW') && controls.is_key_down('KeyS')) || (controls.is_key_down('KeyA') && controls.is_key_down("KeyD"))){
+
+            psoition = position;
+
+        }else
+
+        */
+        
+        
         if(controls.is_key_down('KeyA')){
 
-            position = (right.scaled(speed)).add(position);
+            position = (right.scaled(-speed)).add(position);
             
         }
         
         if(controls.is_key_down('KeyD')){
-            
-            position = (right.scaled(-speed)).add(position);
+        
+            position = (right.scaled(speed)).add(position);
                         
         }
         
@@ -149,13 +164,13 @@ function displayMesh(aMesh){//Calls this after loading the mesh into the mesh cl
 
         if(controls.is_key_down('KeyC')){
             
-            position = (up.scaled(speed)).add(position);
+            position = (up.scaled(-speed)).add(position);;
             
         }
 
         if(controls.is_key_down('Space')){
-            
-            position = (up.scaled(-speed)).add(position);
+
+            position = (up.scaled(speed)).add(position);
             
         }
 
