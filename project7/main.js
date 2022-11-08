@@ -14,28 +14,36 @@ let vertex_source =
         in vec3 coordinates;
         in vec4 color;
 
+        in vec2 uv;
+
         out vec4 v_color;
+        out vec2 v_uv;
 
         void main(void){
             gl_Position = modelview * vec4(coordinates, 1.0);
             v_color = color;
+            v_uv = uv;
 }`;
 
 let fragment_source = 
         `#version 300 es
         precision mediump float;
 
+        uniform sampler2D tex_0;
+
         in vec4 v_color;
+        in vec2 v_uv;
 
         out vec4 f_color;
 
         void main(void){
-            f_color = v_color;
+            f_color = texture( tex_0, v_uv );
 }`;
 
 //Preping the shaders
 let vert_shader = gl.createShader(gl.VERTEX_SHADER);
 let frag_shader = gl.createShader(gl.FRAGMENT_SHADER);
+let tex = gl.createTexture();
 
 gl.shaderSource(vert_shader, vertex_source);
 gl.shaderSource(frag_shader, fragment_source);
@@ -49,6 +57,55 @@ gl.attachShader(shader_program, vert_shader);
 gl.attachShader(shader_program, frag_shader);
 
 gl.linkProgram(shader_program);
+
+
+function xor_texture(width) {
+    let data = new Array( 256 * 256 * 4 );
+    // 4 because there are 4 bytes per pixel: R, G, B, and A
+    for( let row = 0; row < width; row++ ) {
+        for( let col = 0; col < width; col++ ) {
+        // calculations go here
+
+            let pix = ( row * width + col ) * 4;
+
+            data[pix] = data[pix + 1] = data[pix + 2] = row ^ col;
+
+            data[pix + 3] = 255;
+
+        }
+    }
+    return new Uint8Array( data );
+}
+
+
+gl.bindTexture( gl.TEXTURE_2D, tex );
+
+gl.texImage2D(
+    gl.TEXTURE_2D, 
+    0, gl.RGBA,
+    256, 256, 0, 
+    gl.RGBA, gl.UNSIGNED_BYTE,  
+    xor_texture(256)
+);
+
+gl.generateMipmap(gl.TEXTURE_2D);
+
+let image = new Image();
+
+function on_load(){
+
+    gl.bindTexture( gl.TEXTURE_2D, tex );
+
+    gl.texImage2D( 
+        gl.TEXTURE_2D, 0, gl.RGBA,
+        gl.RGBA, gl.UNSIGNED_BYTE, image );
+
+    gl.generateMipmap(gl.TEXTURE_2D);
+
+}
+
+image.onload = on_load;
+image.src = 'tex/texture_map.png';
 
 function displayMesh(aMesh){//Calls this after loading the mesh into the mesh class
 
@@ -108,12 +165,26 @@ function displayMesh(aMesh){//Calls this after loading the mesh into the mesh cl
             gl.FLOAT, false, VERTEX_STRIDE, 0 
         );
 
+        /*
+
         set_vertex_attrib_to_buffer( 
             gl, aMesh.program, 
             "color", 
             aMesh.verts, 4, 
             gl.FLOAT, false, VERTEX_STRIDE, 12
         );
+
+        */
+
+        set_vertex_attrib_to_buffer( 
+            gl, aMesh.program, 
+            "uv", 
+            aMesh.verts, 2, 
+            gl.FLOAT, false, VERTEX_STRIDE, 28
+        );
+
+        const sampler_loc = gl.getUniformLocation(aMesh.program, 'tex_0');
+        gl.uniform1i(sampler_loc, 0);
 
         gl.drawElements( gl.TRIANGLES, aMesh.n_indis, gl.UNSIGNED_SHORT, 0 );//Draw the mesh
 
